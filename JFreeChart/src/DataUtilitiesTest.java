@@ -4,6 +4,7 @@ import org.jfree.data.*;
 import org.jmock.*;
 import org.junit.*;
 
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -53,11 +54,93 @@ public class DataUtilitiesTest {
 		}});
 		
 	}
+	
+	/* CALCULATECOLUMNTOTAL METHOD TEST CASES */
+
+	// POSITIVE COLUMN VALUES
+	// Testing calculateColumnTotal method with column values having positive
+	// values.
+	// Result should be returning a total of the column's values that should all
+	// return a positive total.
+	@Test
+	public void test_calculateColumnTotal_AllPositive() {
+		// (2,3,4) in column 3 => (9) All positive in column of array v1
+		double val1 = 2;
+		double val2 = 3;
+		double val3 = 4;
+		int column = 3;
+		double expected = 9;
+		mockery.checking(new Expectations() {{
+			allowing(value).getColumnCount(); will(returnValue(3));
+			allowing(value).getRowCount(); will(returnValue(3));
+			
+			one(value).getValue(0, column); will(returnValue(val1));
+			one(value).getValue(1, column); will(returnValue(val2));
+			one(value).getValue(2, column); will(returnValue(val3));
+		}});
+		double actual = DataUtilities.calculateColumnTotal(value, column);
+
+		assertEquals(expected, actual, 0);
+
+		mockery.assertIsSatisfied(); // verify that the getValue method is called exactly 3
+																// times
+	}
+
+	// NEGATIVE COLUMN VALUES
+	// Testing calculateColumnTotal method with column values having negative
+	// values.
+	// Result should be returning a total of the column's values that should all
+	// return a negative total.
+	@Test
+	public void test_calculateColumnTotal_AllNegative() {
+		// (-5,-3,-7) in column 3 => (-15) All negative in column of array v1
+		double val1 = -5;
+		double val2 = -3;
+		double val3 = -7;
+		int column = 3;
+		double expected = -15;
+		mockery.checking(new Expectations() {{
+			allowing(value).getColumnCount(); will(returnValue(3));
+			allowing(value).getRowCount(); will(returnValue(3));
+			
+			one(value).getValue(0, column); will(returnValue(val1));
+			one(value).getValue(1, column); will(returnValue(val2));
+			one(value).getValue(2, column); will(returnValue(val3));
+		}});
+		double actual = DataUtilities.calculateColumnTotal(value, column);
+
+		assertEquals(expected, actual, 0);
+	}
+
+	// MIXED COLUMN VALUES
+	// Testing calculateColumnTotal method with column values having mixed values of
+	// either a negative or positive value.
+	// Result should be returning a total of the column's values.
+	@Test
+	public void test_calculateColumnTotal_MixedValues() {
+		// (-5,-3,-7) in column 3 => (-15) All negative in column of array v1
+		double val1 = -5;
+		double val2 = 5;
+		double val3 = -2;
+		int column = 2;
+		double expected = -2;
+		mockery.checking(new Expectations() {{
+			allowing(value).getColumnCount(); will(returnValue(3));
+			allowing(value).getRowCount(); will(returnValue(3));
+			
+			one(value).getValue(0, column); will(returnValue(val1));
+			one(value).getValue(1, column); will(returnValue(val2));
+			one(value).getValue(2, column); will(returnValue(val3));
+		}});
+		double actual = DataUtilities.calculateColumnTotal(value, column);
+
+		assertEquals(expected, actual, 0);
+	}
 
 	// Testing calculateColumnTotal method with column values all to equal null.
 	// Result should be returning a total of Zero.
 	@Test
-	public void test_calculateColumnTotalMethod_InvalidInput() {
+	public void test_calculateColumnTotal_InvalidInput() {
 		// (null,null,null) in column 1 => 0 if invalid inputs are entered in Values2D
 		// object, a total of zero should be returned
 		
@@ -83,19 +166,100 @@ public class DataUtilitiesTest {
 	// run.
 	// It throws a NullPointerException instead of the InvalidParameterException
 	// when tested.
-	@Test(expected = IllegalArgumentException.class)
-	public void test_calculateColumnTotalMethod_ExceptionThrows_IllegalArgumentException() {
+	@Test(expected = InvalidParameterException.class)
+	public void test_calculateColumnTotal_ExceptionThrows_InvalidParameterException() {
 		value = null;
 		DataUtilities.calculateColumnTotal(value, 1);
 	}
 
+	
 	/* CALCULATEROWTOTAL METHOD TEST CASES */
 
+	// POSITIVE ROW VALUES
+	// Testing calculateRowTotal method with row values having positive values.
+	// Result should be returning a total of the row's values that should all return
+	// a positive total.
+	@Test
+	public void test_calculateRowTotalMethod_AllPositive() {
+		// (2,3,4) in row 3 => (9) All positive in row of array v1
+		double val1 = 2;
+		double val2 = 3;
+		double val3 = 4;
+		int row = 3;
+		double expected = 9;
+		mockery.checking(new Expectations() {{
+			allowing(value).getColumnCount(); will(returnValue(3));
+			allowing(value).getRowCount(); will(returnValue(3));
+			
+			one(value).getValue(row, 0); will(returnValue(val1));
+			one(value).getValue(row, 1); will(returnValue(val2));
+			one(value).getValue(row, 2); will(returnValue(val3));
+		}});
+		double actual = DataUtilities.calculateRowTotal(value, row);
+
+		assertEquals(expected, actual, 0);
+
+		mockery.assertIsSatisfied(); // verify that the getValue method is called exactly 3
+																// times
+	}
+
+	// NEGATIVE ROW VALUES
+	// Testing calculateRowTotal method with row values having negative values.
+	// Result should be returning a total of the row's values that should all return
+	// a negative total.
+	@Test
+	public void test_calculateRowTotalMethod_AllNegative() {
+		// (-5,-3,-7) in row 3 => (-15) All negative in row of array v1
+		double val1 = -5;
+		double val2 = -3;
+		double val3 = -7;
+		int row = 2;
+		double expected = -15;
+		mockery.checking(new Expectations() {{
+			allowing(value).getColumnCount(); will(returnValue(3));
+			allowing(value).getRowCount(); will(returnValue(3));
+			
+			one(value).getValue(row, 0); will(returnValue(val1));
+			one(value).getValue(row, 1); will(returnValue(val2));
+			one(value).getValue(row, 2); will(returnValue(val3));
+		}});
+		double actual = DataUtilities.calculateRowTotal(value, row);
+
+		assertEquals(expected, actual, 0);
+
+		mockery.assertIsSatisfied();
+	}
+
+	// MIXED ROW VALUES
+	// Testing calculateRowTotal method with row values having mixed values of
+	// either a negative or positive value.
+	// Result should be returning a total of the row's values.
+	@Test
+	public void test_calculateRowTotalMethod_MixedValues() {
+		// (-5,5,-2) in row 3 => (-2) 2 negative, 1 positive
+		double val1 = -5;
+		double val2 = 5;
+		double val3 = -2;
+		int row = 3;
+		double expected = -2;
+		mockery.checking(new Expectations() {{
+			allowing(value).getColumnCount(); will(returnValue(3));
+			allowing(value).getRowCount(); will(returnValue(3));
+			
+			one(value).getValue(row, 0); will(returnValue(val1));
+			one(value).getValue(row, 1); will(returnValue(val2));
+			one(value).getValue(row, 2); will(returnValue(val3));
+		}});
+		double actual = DataUtilities.calculateRowTotal(value, row);
+
+		assertEquals(expected, actual, 0);
+		mockery.assertIsSatisfied();
+	}
 
 	// Testing calculateRowTotal method with row values all to equal null.
 	// Result should be returning a total of Zero.
 	@Test
-	public void test_calculateRowTotalMethod_InvalidInput() {
+	public void test_calculateRowTotal_InvalidInput() {
 		// (null,null,null) in row 1 => 0 if invalid inputs are entered in Values2D
 		// object, a total of zero should be returned
 		mockery.checking(new Expectations() {{
@@ -114,14 +278,14 @@ public class DataUtilitiesTest {
 	// array because the method cannot process it at all
 	// and provides a red underline on code warning that the test program will not
 	// run.
-	@Test(expected = IllegalArgumentException.class)
-	public void test_calculateRowTotalMethod_ExceptionThrows_IllegalArgumentException() {
+	@Test(expected = InvalidParameterException.class)
+	public void test_calculateRowTotal_ExceptionThrows_InvalidParameterException() {
 		// Pass a null Values2D object => Throws IllegalArgumentException
 		value = null;
 		DataUtilities.calculateRowTotal(value, 1);
 	}
 
-//	@ParameterizedTest
+//	@Test
 //	@CsvSource({ "-0.28, 0", // Testing negative number
 //			"0.42, 1", // Testing regular number
 //			"0.85, 2" // Testing regular number
@@ -151,9 +315,8 @@ public class DataUtilitiesTest {
 	public void createNumberArray_single_test() {
 		oldArray = new double[] { 1 };
 		newArray = DataUtilities.createNumberArray(oldArray);
-
 		for (int i = 0; i < newArray.length; i++) {
-			assertTrue(newArray[i] != null);
+			assertNotNull(newArray[i]);
 			assertEquals(oldArray[i], newArray[i].doubleValue(), 0);
 		}
 		;
@@ -171,7 +334,7 @@ public class DataUtilitiesTest {
 		newArray = DataUtilities.createNumberArray(oldArray);
 
 		for (int i = 0; i < newArray.length; i++) {
-			assertTrue(newArray[i] != null);
+			assertNotNull(newArray[i]);
 			assertEquals(oldArray[i], newArray[i].doubleValue(), 0);
 		}
 		;
@@ -191,7 +354,7 @@ public class DataUtilitiesTest {
 
 		for (int i = 0; i < new2DArray.length; i++) {
 			for (int e = 0; e < new2DArray[i].length; e++) {
-				assertTrue(new2DArray[i][e] != null);
+				assertNotNull(new2DArray[i][e]);
 				assertEquals(new2DArray[i][e].doubleValue(), old2DArray[i][e], 0);
 			}
 			;
@@ -206,7 +369,7 @@ public class DataUtilitiesTest {
 
 		for (int i = 0; i < new2DArray.length; i++) {
 			for (int e = 0; e < new2DArray[i].length; e++) {
-				assertTrue(new2DArray[i][e] != null);
+				assertNotNull(new2DArray[i][e]);
 				assertEquals(new2DArray[i][e].doubleValue(), old2DArray[i][e], 0);
 			}
 			;
