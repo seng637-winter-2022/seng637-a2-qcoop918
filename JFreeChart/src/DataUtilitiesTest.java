@@ -1,24 +1,23 @@
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
 
-import org.jfree.data.*; 
+import org.jfree.data.*;
+import org.jmock.*;
 import org.junit.*;
 
-//import org.junit.jupiter.api.*;
-//import org.junit.jupiter.params.ParameterizedTest;
-//import org.junit.jupiter.params.provider.CsvSource;
-//import static org.mockito.Mockito.*;
-
-import java.security.InvalidParameterException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class DataUtilitiesTest {
 	private double[] oldArray;
 	private double[][] old2DArray;
 	private java.lang.Number[] newArray;
 	private java.lang.Number[][] new2DArray;
+	
+	// Variables for mocking
+	private Mockery mockery;
 	private KeyedValues kvalues;
 	private Values2D value; // instance of Values2D
+	
 
 	@BeforeClass
 	public static void setupBeforeClass() throws Exception {
@@ -26,33 +25,33 @@ public class DataUtilitiesTest {
 
 	@Before
 	public void setUp() throws Exception {
-//		Mockery mockery = new Mockery();
-		value = mock(Values2D.class); // all test cases will use this mocked value variable with changed values.
-		when(value.getColumnCount()).thenReturn(4); // 3x4 whatever you want
-		when(value.getRowCount()).thenReturn(3);
-		kvalues = mock(KeyedValues.class);
+		mockery = new Mockery();
+		value = mockery.mock(Values2D.class); // all test cases will use this mocked value variable with changed values.
+		kvalues = mockery.mock(KeyedValues.class);
+		
+		ArrayList<Integer> keyList = new ArrayList<Integer>(Arrays.asList(0,1,2));
+		
+		mockery.checking(new Expectations() {{
+			allowing(value).getColumnCount(); will(returnValue(4)); // 3x4 whatever you want
+			allowing(value).getRowCount(); will(returnValue(3));
+			
+			allowing(kvalues).getItemCount(); will(returnValue(3));
+			
+			allowing(kvalues).getValue(0); will(returnValue(-4));
+			allowing(kvalues).getValue(1); will(returnValue(6));
+			allowing(kvalues).getValue(2); will(returnValue(12));
 
-		when(kvalues.getItemCount()).thenReturn(3);
+			allowing(kvalues).getKey(0); will(returnValue(0));
+			allowing(kvalues).getKey(1); will(returnValue(1));
+			allowing(kvalues).getKey(2); will(returnValue(2));
+			
+			allowing(kvalues).getIndex(0); will(returnValue(0));
+			allowing(kvalues).getIndex(1); will(returnValue(1));
+			allowing(kvalues).getIndex(2); will(returnValue(2));
 
-		when(kvalues.getValue(0)).thenReturn(-4);
-		when(kvalues.getValue(1)).thenReturn(6);
-		when(kvalues.getValue(2)).thenReturn(12);
-
-		when(kvalues.getKey(0)).thenReturn(0);
-		when(kvalues.getKey(1)).thenReturn(1);
-		when(kvalues.getKey(2)).thenReturn(2);
-
-		when(kvalues.getIndex(0)).thenReturn(0);
-		when(kvalues.getIndex(1)).thenReturn(1);
-		when(kvalues.getIndex(2)).thenReturn(2);
-
-
-		ArrayList keyList = new ArrayList<>();
-		keyList.add(0);
-		keyList.add(1);
-		keyList.add(2);
-
-		when(kvalues.getKeys()).thenReturn(keyList);
+			allowing(kvalues).getKeys(); will(returnValue(keyList));
+		}});
+		
 	}
 
 	// Testing calculateColumnTotal method with column values all to equal null.
@@ -61,29 +60,18 @@ public class DataUtilitiesTest {
 	public void test_calculateColumnTotalMethod_InvalidInput() {
 		// (null,null,null) in column 1 => 0 if invalid inputs are entered in Values2D
 		// object, a total of zero should be returned
-		when(value.getValue(0, 1)).thenReturn(null);
-		when(value.getValue(1, 1)).thenReturn(null);
-		when(value.getValue(2, 1)).thenReturn(null);
+		
+		mockery.checking(new Expectations() {{
+			one(value).getValue(0, 1); will(returnValue(null));
+			one(value).getValue(1, 1); will(returnValue(null));
+			one(value).getValue(2, 1); will(returnValue(null));	
+		}});
 		double actual = DataUtilities.calculateColumnTotal(value, 1);
 		double expected = 0.0;
 
-		assertEquals(expected, actual);
-		verify(value, times(3)).getValue(anyInt(), anyInt());
-	}
-
-	// Testing calculateColumnTotal method with Values2D object being null making it
-	// an invalid object.
-	// Result should be throwing an InvalidParameterException exception.
-	// Cannot test with different data objects like a string 2D array or a double 2D
-	// array because the method cannot process it at all
-	// and provides a red underline on code warning that the test program will not
-	// run.
-	// It throws a NullPointerException instead of the InvalidParameterException
-	// when tested.
-	// TODO: Empty array instead of null input
-	@Test(expected = InvalidParameterException.class)
-	public void test_calculateColumnTotalMethod_ExceptionThrows_InvalidParameterException() {
-		DataUtilities.calculateColumnTotal(value, 10);
+		assertEquals(expected, actual, 0);
+		
+		mockery.assertIsSatisfied();
 	}
 	
 	// Testing calculateColumnTotal method with Values2D object being null making it
@@ -95,72 +83,14 @@ public class DataUtilitiesTest {
 	// run.
 	// It throws a NullPointerException instead of the InvalidParameterException
 	// when tested.
-	@Test(expected = NullPointerException.class)
-	public void test_calculateColumnTotalMethod_ExceptionThrows_NullPointerException() {
+	@Test(expected = IllegalArgumentException.class)
+	public void test_calculateColumnTotalMethod_ExceptionThrows_IllegalArgumentException() {
 		value = null;
 		DataUtilities.calculateColumnTotal(value, 1);
 	}
 
 	/* CALCULATEROWTOTAL METHOD TEST CASES */
 
-	// POSITIVE ROW VALUES
-	// Testing calculateRowTotal method with row values having positive values.
-	// Result should be returning a total of the row's values that should all return
-	// a positive total.
-//	@ParameterizedTest
-//	@CsvSource({ "2,3,4,2,9", "10,15,20,1,45", "123,523,200,0,846" })
-//	public void test_calculateRowTotalMethod_AllPositive(double val1, double val2, double val3, int row, double expected) {
-//		// (2,3,4) in row 3 => (9) All positive in row of array v1
-//		// (10,15,20) in row 2 => (45) All positive in row of array v2
-//		// (123, 523, 200) in row 1 => (846) All positive in row of array v3
-//		when(value.getValue(row, 0)).thenReturn(val1);
-//		when(value.getValue(row, 1)).thenReturn(val2);
-//		when(value.getValue(row, 2)).thenReturn(val3);
-//		double actual = DataUtilities.calculateRowTotal(value, row);
-//
-//		assertEquals(expected, actual);
-//
-//		verify(value, times(3)).getValue(anyInt(), anyInt()); // verify that the getValue method is called exactly 3
-//																// times
-//	}
-
-	// NEGATIVE ROW VALUES
-	// Testing calculateRowTotal method with row values having negative values.
-	// Result should be returning a total of the row's values that should all return
-	// a negative total.
-//	@ParameterizedTest
-//	@CsvSource({ "-5,-3,-7,2,-15", "-12,-16,-10,1,-38", "-100,-222,-320,0,-642" })
-//	public void test_calculateRowTotalMethod_AllNegative(double val1, double val2, double val3, int row, double expected) {
-//		// (-5,-3,-7) in column 3 => (-15) All negative in row of array v1
-//		// (-12,-16,-10) in column 2 => (-38) All negative in row of array v2
-//		// (-100, -222, -320) in column 1 => (-642) All negative in row of array v3
-//		when(value.getValue(row, 0)).thenReturn(val1);
-//		when(value.getValue(row, 1)).thenReturn(val2);
-//		when(value.getValue(row, 2)).thenReturn(val3);
-//		double actual = DataUtilities.calculateRowTotal(value, row);
-//
-//		assertEquals(expected, actual);
-//
-//		verify(value, times(3)).getValue(anyInt(), anyInt());
-//	}
-
-	// MIXED ROW VALUES
-	// Testing calculateRowTotal method with row values having mixed values of
-	// either a negative or positive value.
-	// Result should be returning a total of the row's values.
-//	@ParameterizedTest
-//	@CsvSource({ "-5,5,-2,2,-2", "70,-30,50,1,90" })
-//	public void test_calculateRowTotalMethod_MixedValues(double val1, double val2, double val3, int row, double expected) {
-//		// (-5,5,-2) in column 3 => (-2) 2 negative, 1 positive
-//		// (70,-30,50) in column 2 => (90) 2 positive, 1 negative
-//		when(value.getValue(row, 0)).thenReturn(val1);
-//		when(value.getValue(row, 1)).thenReturn(val2);
-//		when(value.getValue(row, 2)).thenReturn(val3);
-//		double actual = DataUtilities.calculateRowTotal(value, row);
-//
-//		assertEquals(expected, actual);
-//		verify(value, times(3)).getValue(anyInt(), anyInt());
-//	}
 
 	// Testing calculateRowTotal method with row values all to equal null.
 	// Result should be returning a total of Zero.
@@ -168,30 +98,13 @@ public class DataUtilitiesTest {
 	public void test_calculateRowTotalMethod_InvalidInput() {
 		// (null,null,null) in row 1 => 0 if invalid inputs are entered in Values2D
 		// object, a total of zero should be returned
-		when(value.getValue(1, 0)).thenReturn(null);
-		when(value.getValue(1, 1)).thenReturn(null);
-		when(value.getValue(1, 2)).thenReturn(null);
+		mockery.checking(new Expectations() {{
+			allowing(value).getValue(with(equal(1)), with(any(Integer.class))); will(returnValue(null));	
+		}});
 		double actual = DataUtilities.calculateRowTotal(value, 1);
 		double expected = 0.0;
 
-		assertEquals(expected, actual);
-		verify(value, times(3)).getValue(anyInt(), anyInt());
-	}
-
-	// Testing calculateRowTotal method with Values2D object being null making it an
-	// invalid object.
-	// Result should be throwing an InvalidParameterException exception.
-	// Cannot test with different data objects like a string 2D array or a double 2D
-	// array because the method cannot process it at all
-	// and provides a red underline on code warning that the test program will not
-	// run.
-	// It throws a NullPointerException instead of the InvalidParameterException
-	// when tested.
-	// TODO: Empty array input instead of null input
-	@Test(expected = InvalidParameterException.class)
-	public void test_calculateRowTotalMethod_ExceptionThrows_InvalidParameterException() {
-		// Pass a null Values2D object => Throws InvalidParameterException
-		DataUtilities.calculateRowTotal(value, 10);
+		assertEquals(expected, actual, 0.1);
 	}
 	
 	// Testing calculateRowTotal method with Values2D object being null making it an
@@ -201,11 +114,9 @@ public class DataUtilitiesTest {
 	// array because the method cannot process it at all
 	// and provides a red underline on code warning that the test program will not
 	// run.
-	// It throws a NullPointerException instead of the InvalidParameterException
-	// when tested.
-	@Test(expected = NullPointerException.class)
-	public void test_calculateRowTotalMethod_ExceptionThrows_NullPointerException() {
-		// Pass a null Values2D object => Throws InvalidParameterException
+	@Test(expected = IllegalArgumentException.class)
+	public void test_calculateRowTotalMethod_ExceptionThrows_IllegalArgumentException() {
+		// Pass a null Values2D object => Throws IllegalArgumentException
 		value = null;
 		DataUtilities.calculateRowTotal(value, 1);
 	}
@@ -221,8 +132,8 @@ public class DataUtilitiesTest {
 //		assertEquals(expected, actual.getValue(a).doubleValue(), 0.01d);
 //	}
 
-	@Test(expected = InvalidParameterException.class)
-	public void testCumulativePercentageExceptionNull() {
+	@Test(expected = IllegalArgumentException.class)
+	public void testCumulativePercentageException_throwsIllegalArgumentException() {
 		kvalues = null;
 		DataUtilities.getCumulativePercentages(kvalues);
 	}
@@ -243,7 +154,7 @@ public class DataUtilitiesTest {
 
 		for (int i = 0; i < newArray.length; i++) {
 			assertTrue(newArray[i] != null);
-			assertEquals(oldArray[i], newArray[i].doubleValue());
+			assertEquals(oldArray[i], newArray[i].doubleValue(), 0);
 		}
 		;
 	}
@@ -261,7 +172,7 @@ public class DataUtilitiesTest {
 
 		for (int i = 0; i < newArray.length; i++) {
 			assertTrue(newArray[i] != null);
-			assertEquals(oldArray[i], newArray[i].doubleValue());
+			assertEquals(oldArray[i], newArray[i].doubleValue(), 0);
 		}
 		;
 	}
@@ -281,7 +192,7 @@ public class DataUtilitiesTest {
 		for (int i = 0; i < new2DArray.length; i++) {
 			for (int e = 0; e < new2DArray[i].length; e++) {
 				assertTrue(new2DArray[i][e] != null);
-				assertEquals(new2DArray[i][e].doubleValue(), old2DArray[i][e]);
+				assertEquals(new2DArray[i][e].doubleValue(), old2DArray[i][e], 0);
 			}
 			;
 		}
@@ -296,7 +207,7 @@ public class DataUtilitiesTest {
 		for (int i = 0; i < new2DArray.length; i++) {
 			for (int e = 0; e < new2DArray[i].length; e++) {
 				assertTrue(new2DArray[i][e] != null);
-				assertEquals(new2DArray[i][e].doubleValue(), old2DArray[i][e]);
+				assertEquals(new2DArray[i][e].doubleValue(), old2DArray[i][e], 0);
 			}
 			;
 		}

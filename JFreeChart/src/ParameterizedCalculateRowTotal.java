@@ -17,7 +17,7 @@ import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
 
 @RunWith(Parameterized.class)
-public class ParameterizedCalculateColumnTotal {
+public class ParameterizedCalculateRowTotal {
 
 	@Parameter(value = 0)
 	public double val1;
@@ -26,7 +26,7 @@ public class ParameterizedCalculateColumnTotal {
 	@Parameter(value = 2)
 	public double val3;
 	@Parameter(value = 3)
-	public int column;
+	public int row;
 	@Parameter(value = 4)
 	public double expected;
 
@@ -46,39 +46,33 @@ public class ParameterizedCalculateColumnTotal {
 			allowing(value).getColumnCount(); will(returnValue(4));
 			allowing(value).getRowCount(); will(returnValue(3));
 			
-			one(value).getValue(0, column); will(returnValue(val1));
-			one(value).getValue(1, column); will(returnValue(val2));
-			one(value).getValue(2, column); will(returnValue(val3));
+			one(value).getValue(row, 0); will(returnValue(val1));
+			one(value).getValue(row, 1); will(returnValue(val2));
+			one(value).getValue(row, 2); will(returnValue(val3));
 		}});
 	}
 
-	// POSITIVE COLUMN VALUES
 	@Parameters
 	public static Collection<Object[]> data() {
 		return Arrays.asList(new Object[][] {
 			// Positive Values
-			{ 2, 3, 4, 3, 9 }, 
-			{ 10, 15, 20, 2, 45 }, 
-			{ 123, 523, 200, 1, 846 },
+//			@CsvSource({ "2,3,4,2,9", "10,15,20,1,45", "123,523,200,0,846" })
 			
 			// All Negative Values
-			{ -5,-3,-7,3,-15},
-			{-12,-16,-10,2,-38},
-			{-100,-222,-320,1,-642},
+//			@CsvSource({ "-5,-3,-7,2,-15", "-12,-16,-10,1,-38", "-100,-222,-320,0,-642" })
 			
 			// Mixed Values
-			{-5,5,-2,3,-2},
-			{70,-30,50,2,90}
+//			@CsvSource({ "-5,5,-2,2,-2", "70,-30,50,1,90" })
 		});
 	}
-
-	// Testing calculateColumnTotal method with column values having positive
+	
+	// Testing calculateRowTotal method with row values having positive
 	// values.
-	// Result should be returning a total of the column's values that should all
+	// Result should be returning a total of the row's values that should all
 	// return a positive total.
 	@Test
-	public void test_calculateColumnTotalMethod_AllPositive() {
-		double actual = DataUtilities.calculateColumnTotal(value, column);
+	public void test_calculateRowTotalMethod_AllPositive() {
+		double actual = DataUtilities.calculateRowTotal(value, row);
 
 		assertEquals(expected, actual, 0);
 		mockery.assertIsSatisfied();
