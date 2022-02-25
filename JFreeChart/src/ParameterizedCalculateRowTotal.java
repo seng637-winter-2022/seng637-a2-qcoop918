@@ -43,7 +43,7 @@ public class ParameterizedCalculateRowTotal {
 		mockery = new Mockery();
 		value = mockery.mock(Values2D.class); // all test cases will use this mocked value variable with changed values.
 		mockery.checking(new Expectations() {{
-			allowing(value).getColumnCount(); will(returnValue(4));
+			allowing(value).getColumnCount(); will(returnValue(3));
 			allowing(value).getRowCount(); will(returnValue(3));
 			
 			one(value).getValue(row, 0); will(returnValue(val1));
@@ -56,13 +56,18 @@ public class ParameterizedCalculateRowTotal {
 	public static Collection<Object[]> data() {
 		return Arrays.asList(new Object[][] {
 			// Positive Values
-//			@CsvSource({ "2,3,4,2,9", "10,15,20,1,45", "123,523,200,0,846" })
+			{ 2,3,4,2,9},
+			{10,15,20,1,45},
+			{123,523,200,0,846},
 			
 			// All Negative Values
-//			@CsvSource({ "-5,-3,-7,2,-15", "-12,-16,-10,1,-38", "-100,-222,-320,0,-642" })
+			{-5,-3,-7,2,-15},
+			{-12,-16,-10,1,-38},
+			{-100,-222,-320,0,-642},
 			
 			// Mixed Values
-//			@CsvSource({ "-5,5,-2,2,-2", "70,-30,50,1,90" })
+			{-5,5,-2,2,-2},
+			{70,-30,50,1,90}
 		});
 	}
 	
