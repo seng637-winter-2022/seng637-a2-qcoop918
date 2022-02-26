@@ -1,3 +1,4 @@
+package org.jfree.data.test;
 import org.jfree.data.Range;
 
 import static org.junit.Assert.*;
@@ -37,6 +38,17 @@ public class RangeTest {
 
 		assertEquals(expected, actual);
 		//"Combining (3,5) with (7,13) should result in (3,13)"
+	}
+	
+	@Test
+	public void test_CombineMethod_NegativeNoOverlap() {
+		// (-5,-4) (-3, -2) -> (-5, -2)
+		exampleRange1 = new Range(-5, -4);
+		exampleRange2 = new Range(-3, -2);
+		expected = new Range(-5, -2);
+		Range actual = Range.combine(exampleRange2, exampleRange1);
+
+		assertEquals(expected, actual);
 	}
 
 	// Testing combine method with 2 Ranges that are positive but overlaps with each
