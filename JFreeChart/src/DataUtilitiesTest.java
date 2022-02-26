@@ -145,9 +145,7 @@ public class DataUtilitiesTest {
 		// object, a total of zero should be returned
 		
 		mockery.checking(new Expectations() {{
-			one(value).getValue(0, 1); will(returnValue(null));
-			one(value).getValue(1, 1); will(returnValue(null));
-			one(value).getValue(2, 1); will(returnValue(null));	
+			allowing(value).getValue(with(any(Integer.class)), with(equal(1))); will(returnValue(null));
 		}});
 		double actual = DataUtilities.calculateColumnTotal(value, 1);
 		double expected = 0.0;
@@ -285,26 +283,32 @@ public class DataUtilitiesTest {
 		DataUtilities.calculateRowTotal(value, 1);
 	}
 
-//	@Test
-//	@CsvSource({ "-0.28, 0", // Testing negative number
-//			"0.42, 1", // Testing regular number
-//			"0.85, 2" // Testing regular number
-//	})
-//	public void getCumulativePercentageTest(double expected, int a) {
-//		KeyedValues actual = DataUtilities.getCumulativePercentages(kvalues);
-//
-//		assertEquals(expected, actual.getValue(a).doubleValue(), 0.01d);
-//	}
+	@Test
+	public void test_getCumulativePercentage_negative() {
+		double expected = -0.28;
+		int a = 0;
+		KeyedValues actual = DataUtilities.getCumulativePercentages(kvalues);
+		assertEquals(expected, actual.getValue(a).doubleValue(), 0.01d);
+	}
+	
+
+	@Test
+	public void test_getCumulativePercentage_positive() {
+		double expected = 0.42;
+		int a = 1;
+		KeyedValues actual = DataUtilities.getCumulativePercentages(kvalues);
+		assertEquals(expected, actual.getValue(a).doubleValue(), 0.01d);
+	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void testCumulativePercentageException_throwsIllegalArgumentException() {
+	public void test_getCumulativePercentage_null() {
 		kvalues = null;
 		DataUtilities.getCumulativePercentages(kvalues);
 	}
 
 	/* CREATE NUMBER ARRAY */
 	@Test
-	public void createNumberArray_Length() {
+	public void test_createNumberArray_Length() {
 		oldArray = new double[] { 1, 3, 4, 5, 6, 1, 0, 3, -4, -2, -10, 0.5, -0.5, 1.25, -1.25 };
 		newArray = DataUtilities.createNumberArray(oldArray);
 
@@ -312,7 +316,7 @@ public class DataUtilitiesTest {
 	}
 
 	@Test
-	public void createNumberArray_single_test() {
+	public void test_createNumberArray_single() {
 		oldArray = new double[] { 1 };
 		newArray = DataUtilities.createNumberArray(oldArray);
 		for (int i = 0; i < newArray.length; i++) {
@@ -323,13 +327,13 @@ public class DataUtilitiesTest {
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void createNumberArray_null_test() {
+	public void test_createNumberArray_null() {
 		oldArray = null;
 		newArray = DataUtilities.createNumberArray(oldArray);
 	}
 
 	@Test
-	public void createNumberArray_test() {
+	public void test_createNumberArray() {
 		oldArray = new double[] { 1, 3, 4, 5, 6, 1, 0, 3, -4, -2, -10, 0.5, -0.5, 1.25, -1.25 };
 		newArray = DataUtilities.createNumberArray(oldArray);
 
@@ -342,13 +346,13 @@ public class DataUtilitiesTest {
 
 	/* CREATE NUMBER ARRAY 2D */
 	@Test(expected = IllegalArgumentException.class)
-	public void createNumberArray2D_null_test() {
+	public void test_createNumberArray2D_null() {
 		old2DArray = null;
 		DataUtilities.createNumberArray2D(old2DArray);
 	}
 
 	@Test
-	public void createNumberArray2D_single_test() {
+	public void test_createNumberArray2D_single() {
 		old2DArray = new double[][] { new double[] { 1 } };
 		new2DArray = DataUtilities.createNumberArray2D(old2DArray);
 
@@ -362,7 +366,7 @@ public class DataUtilitiesTest {
 	}
 
 	@Test
-	public void createNumberArray2D_test() {
+	public void test_createNumberArray2D() {
 		old2DArray = new double[][] { new double[] { 1, 3, 4, 5, 6, 1, 0, 3, -4, -2, -10, 0.5, -0.5, 1.25, -1.25 },
 				new double[] { 0.5, -0.5, 1.25, -1.25, 10, 1000000 }, new double[] { 0 }, };
 		new2DArray = DataUtilities.createNumberArray2D(old2DArray);

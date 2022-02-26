@@ -555,7 +555,7 @@ public class RangeTest {
 	/* EXPAND TEST */
 	// testing expand to create a faulty range of 3-2 should throw error
 	@Test (expected = IllegalArgumentException.class)
-	public void expand_ErrorRangeTest() {
+	public void test_expand_ErrorRange() {
 		
 		exampleRange = Range.expand(new Range(2, 6), -0.25, -1);
 		//"The lowerrange should be 3, the upperrange 2"
@@ -563,13 +563,13 @@ public class RangeTest {
 
 	// testing if null value is not permitted like it says in the api
 	@Test (expected = IllegalArgumentException.class)
-	public void expand_NullRangeTest() {
+	public void test_expand_NullRange() {
 		
 			exampleRange = Range.expand(null, -0.25, -1);
 		//"The lowerrange should be 3, the upperrange 2"
 	}
 
-	public void expand_example_test() {
+	public void test_expand_example() {
 		double origLower = 2;
 		double origHigher= 6;
 		double lowerMod =0.25;
@@ -581,7 +581,7 @@ public class RangeTest {
 		assertEquals(newHigher, exampleRange.getUpperBound(), 0);
 	}
 
-	public void expandToInclude_example_test(double origLower, double origHigher, double newValue, double newLower,
+	public void test_expandToInclude_example(double origLower, double origHigher, double newValue, double newLower,
 			double newHigher, String expected) {
 		exampleRange = Range.expandToInclude(new Range(1, 10), 5);
 		assertEquals(true, exampleRange.contains(5));
@@ -589,37 +589,37 @@ public class RangeTest {
 		assertEquals(10, exampleRange.getUpperBound(), 0);
 	}
 
-	public void expandToInclude_null_test() {
+	public void test_expandToInclude_null() {
 		exampleRange = Range.expandToInclude(null, 0);
 		assertEquals(true, exampleRange.contains(0));
 	}
 
 	/* CONTAINS TEST */
-	public void contains_true_test() {
+	public void test_contains_true() {
 		exampleRange = new Range(-1, 0);
 		assertEquals(true, exampleRange.contains(0));
 	}
 
-	public void contains_false_test() {
+	public void test_contains_false() {
 		exampleRange = new Range(5, 10);
 		assertEquals(false, exampleRange.contains(3));
 	}
 
 	/* GET CENTRAL VALUE TEST */
 
-	public void getCentralValue_example_test() {
+	public void test_getCentralValue_example() {
 		exampleRange = new Range(0, 10);
 		assertEquals(5, exampleRange.getCentralValue(), 0);
 	}
 
 	/* GET LENGTH TEST */
-	public void getLength_example_test() {
+	public void test_getLength_example() {
 		exampleRange = new Range(0, 10);
 		assertEquals(10, exampleRange.getLength(),0);
 	}
 
 	@Test (expected = NullPointerException.class)
-	public void getLength_voidRange_test() {
+	public void test_getLength_voidRange() {
 		exampleRange = null;
 		
 		exampleRange.getLength();
@@ -627,13 +627,13 @@ public class RangeTest {
 	}
 
 	/* TO STRING TEST */
-	public void toString_example_test() {
+	public void test_toString_example() {
 		exampleRange = new Range(-1000000, 1000000);
 		assertEquals("Range[" + -1000000 + "," + 1000000 + "]", exampleRange.toString());
 	}
 
 	@Test (expected = NullPointerException.class)
-	public void toString_voidRange_test() {
+	public void test_toString_voidRange() {
 		exampleRange = null;
 		
 		exampleRange.toString();
@@ -641,28 +641,28 @@ public class RangeTest {
 	}
 
 	@Test (expected = InvalidParameterException.class)
-	public void testShiftException() {
+	public void test_ShiftException() {
 		exampleRange = null;
 		Range.shift(exampleRange, 1, true);
 	}
 
-	public void testLowerBound() {
+	public void test_LowerBound() {
 		exampleRange = new Range(-3, 10);
 		assertEquals(-3, exampleRange.getLowerBound(), 0);
 	}
 
-	public void testUpperBound() {
+	public void test_UpperBound() {
 		exampleRange = new Range(-10, 9);
 		assertEquals(9, exampleRange.getUpperBound(), 0);
 	}
 
 
 	// Testing when ranges intersect at 1 point
-	public void testIntersects() {
+	public void test_Intersects() {
 		exampleRange = new Range(-10, -3);
 		assertEquals(expected, exampleRange.intersects(-3, 11));
 	}
-	public void testShift() {
+	public void test_Shift() {
 		exampleRange = new Range(-5, -1);
 		Range expectedRange = new Range(-1, 0);
 		assertEquals(expectedRange, Range.shift(exampleRange, 4, false));
