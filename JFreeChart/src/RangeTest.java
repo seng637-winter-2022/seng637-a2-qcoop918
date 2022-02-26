@@ -1,13 +1,9 @@
-
-package org.jfree.data.test;
 import org.jfree.data.Range;
-
 
 import static org.junit.Assert.*;
 
 import java.security.InvalidParameterException;
 
-import org.jfree.data.*;
 import org.junit.*;
 
 
@@ -266,7 +262,7 @@ public class RangeTest {
 		expectedValue = 13;
 		double actual = exampleRange1.constrain(13);
 
-		assertEquals(expectedValue, actual);
+		assertEquals(expectedValue, actual, 0);
 		//"constrained result should be 13"
 	}
 
@@ -281,7 +277,7 @@ public class RangeTest {
 		expectedValue = 15;
 		double actual = exampleRange1.constrain(18);
 
-		assertEquals(expectedValue, actual);
+		assertEquals(expectedValue, actual, 0);
 		//"constrained result should be 15"
 	}
 
@@ -296,7 +292,7 @@ public class RangeTest {
 		expectedValue = 10;
 		double actual = exampleRange1.constrain(7);
 
-		assertEquals(expectedValue, actual);
+		assertEquals(expectedValue, actual, 0);
 		//"constrained result should be 10"
 	}
 
@@ -314,9 +310,9 @@ public class RangeTest {
 		double actual = exampleRange1.constrain(10);
 		double actual2 = exampleRange1.constrain(15);
 
-		assertEquals(expectedValue, actual);
+		assertEquals(expectedValue, actual, 0);
 		//"constrained result should be 10"
-		assertEquals(expectedValue2, actual2);
+		assertEquals(expectedValue2, actual2, 0);
 		//"constrained result should be 15"
 	}
 
@@ -331,7 +327,7 @@ public class RangeTest {
 		expectedValue = -5;
 		double actual = exampleRange1.constrain(-5);
 
-		assertEquals(expectedValue, actual);
+		assertEquals(expectedValue, actual, 0);
 		//"constrained result should be -5"
 	}
 
@@ -346,7 +342,7 @@ public class RangeTest {
 		expectedValue = -4;
 		double actual = exampleRange1.constrain(-2);
 
-		assertEquals(expectedValue, actual);
+		assertEquals(expectedValue, actual, 0);
 		//"constrained result should be -4"
 	}
 
@@ -361,7 +357,7 @@ public class RangeTest {
 		expectedValue = -8;
 		double actual = exampleRange1.constrain(-20);
 
-		assertEquals(expectedValue, actual);
+		assertEquals(expectedValue, actual, 0);
 		//"constrained result should be -8"
 	}
 
@@ -379,9 +375,9 @@ public class RangeTest {
 		double actual = exampleRange1.constrain(-8);
 		double actual2 = exampleRange1.constrain(-4);
 
-		assertEquals(expectedValue, actual);
+		assertEquals(expectedValue, actual, 0);
 		//"constrained result should be -8"
-		assertEquals(expectedValue2, actual2);
+		assertEquals(expectedValue2, actual2, 0);
 		//"constrained result should be -4"
 	}
 
@@ -513,17 +509,6 @@ public class RangeTest {
 
 	// Testing equals method with similar Null Ranges. Null is permitted to function
 	// in this method. So the equals method should execute.
-	// Result should be True.
-	@Test
-	public void test_EqualsMethod_NullRange() {
-		// (null) (null) -> Returns True: Similar Object values
-		exampleRange1 = null;
-		exampleRange2 = null;
-		assertTrue(exampleRange1.equals(exampleRange2));
-	}
-
-	// Testing equals method with similar Null Ranges. Null is permitted to function
-	// in this method. So the equals method should execute.
 	// Result should be False.
 	@Test
 	public void test_EqualsMethod_OneNullRange_OneActualRange() {
@@ -533,7 +518,6 @@ public class RangeTest {
 		exampleRange2 = null;
 
 		assertFalse(exampleRange1.equals(exampleRange2));
-		assertFalse(exampleRange2.equals(exampleRange1));
 	}
 
 	// Testing equals method with similar Negative Ranges.
@@ -593,16 +577,16 @@ public class RangeTest {
 		double newLower = 1;
 		double newHigher = 8;
 		exampleRange = Range.expand(new Range(origLower, origHigher), lowerMod, higherMod);
-		assertEquals(newLower, exampleRange.getLowerBound());
-		assertEquals(newHigher, exampleRange.getUpperBound());
+		assertEquals(newLower, exampleRange.getLowerBound(), 0);
+		assertEquals(newHigher, exampleRange.getUpperBound(), 0);
 	}
 
 	public void expandToInclude_example_test(double origLower, double origHigher, double newValue, double newLower,
 			double newHigher, String expected) {
 		exampleRange = Range.expandToInclude(new Range(1, 10), 5);
 		assertEquals(true, exampleRange.contains(5));
-		assertEquals(1, exampleRange.getLowerBound());
-		assertEquals(10, exampleRange.getUpperBound());
+		assertEquals(1, exampleRange.getLowerBound(), 0);
+		assertEquals(10, exampleRange.getUpperBound(), 0);
 	}
 
 	public void expandToInclude_null_test() {
@@ -625,13 +609,13 @@ public class RangeTest {
 
 	public void getCentralValue_example_test() {
 		exampleRange = new Range(0, 10);
-		assertEquals(5, exampleRange.getCentralValue());
+		assertEquals(5, exampleRange.getCentralValue(), 0);
 	}
 
 	/* GET LENGTH TEST */
 	public void getLength_example_test() {
 		exampleRange = new Range(0, 10);
-		assertEquals(10, exampleRange.getLength());
+		assertEquals(10, exampleRange.getLength(),0);
 	}
 
 	@Test (expected = NullPointerException.class)
@@ -664,12 +648,12 @@ public class RangeTest {
 
 	public void testLowerBound() {
 		exampleRange = new Range(-3, 10);
-		assertEquals(-3, exampleRange.getLowerBound());
+		assertEquals(-3, exampleRange.getLowerBound(), 0);
 	}
 
 	public void testUpperBound() {
 		exampleRange = new Range(-10, 9);
-		assertEquals(9, exampleRange.getUpperBound());
+		assertEquals(9, exampleRange.getUpperBound(), 0);
 	}
 
 
